@@ -8,11 +8,11 @@ const ADDRESSES_STORAGE_KEY = "nanidoha_addresses";
 
 const DEFAULT_USER = {
   id: "usr-demo-01",
-  name: "Nani Doha",
-  email: "nani@nanidoha.com",
-  phone: "+974 5512 3456",
+  name: "Nani Qatar Customer",
+  email: "customer@nanidoha.com",
+  phone: "+974 7028 4220",
   avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-  tier: "Gold VIP Member",
+  tier: "Qatar VIP Member",
   memberSince: "January 2024",
   loyaltyPoints: 1250
 };
@@ -20,25 +20,45 @@ const DEFAULT_USER = {
 const DEFAULT_ADDRESSES = [
   {
     id: "addr-1",
-    fullName: "Nani Doha",
-    phone: "+974 5512 3456",
-    street: "Villa 42, Street 810, Zone 66",
+    fullName: "Nani Doha Customer",
+    phone: "+974 7028 4220",
+    building: "Villa 42",
+    street: "Street 810",
+    zone: "Zone 66",
     area: "West Bay Lagoon",
     city: "Doha",
     country: "Qatar",
+    landmark: "Near West Bay Beach & Katara",
     isDefault: true,
     type: "Home"
   },
   {
     id: "addr-2",
-    fullName: "Nani Doha",
-    phone: "+974 5512 3456",
-    street: "Porto Arabia Tower 12, Floor 8, Suite 804",
+    fullName: "Nani Doha Customer",
+    phone: "+974 7028 4220",
+    building: "Porto Arabia Tower 12, Floor 8",
+    street: "Main Marina Promenade",
+    zone: "Zone 66",
     area: "The Pearl-Qatar",
     city: "Doha",
     country: "Qatar",
+    landmark: "Near Monoprix & Marina Gate 4",
     isDefault: false,
-    type: "Office"
+    type: "Residence"
+  },
+  {
+    id: "addr-3",
+    fullName: "Nani Doha Customer",
+    phone: "+974 7028 4220",
+    building: "Villa 18, Compound 3",
+    street: "Al Wukair Main Road",
+    zone: "Zone 90",
+    area: "Al Wukair",
+    city: "Al Wakrah",
+    country: "Qatar",
+    landmark: "Behind Al Meera Supermarket",
+    isDefault: false,
+    type: "Family Villa"
   }
 ];
 

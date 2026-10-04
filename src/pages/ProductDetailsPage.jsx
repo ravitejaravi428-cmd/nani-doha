@@ -9,7 +9,10 @@ import {
   Star,
   Share2,
   Clock,
-  ArrowRight
+  ArrowRight,
+  CheckCircle2,
+  MessageCircle,
+  MapPin
 } from "lucide-react";
 import { useProducts } from "../context/ProductContext";
 import { RatingStars } from "../components/common/RatingStars";
@@ -156,8 +159,30 @@ const ProductDetailsContent = ({ product }) => {
         {/* Product Purchasing & Info Column */}
         <div className="product-info-panel">
           <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span className="details-brand">{product.brand}</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                <span className="details-brand">{product.brand}</span>
+                <Link
+                  to="/creator-store"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    background: "#ecfdf5",
+                    color: "#059669",
+                    border: "1px solid #a7f3d0",
+                    padding: "3px 8px",
+                    borderRadius: "12px",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    textDecoration: "none"
+                  }}
+                  title="Sold by Verified Creator - Visit Store"
+                >
+                  <CheckCircle2 size={12} />
+                  <span>Sold by Nani Andhra Handlooms (Verified Seller) →</span>
+                </Link>
+              </div>
               <button
                 type="button"
                 onClick={handleShare}
@@ -296,6 +321,66 @@ const ProductDetailsContent = ({ product }) => {
                 <Heart size={22} fill={isLiked ? "#ef4444" : "none"} />
               </button>
             </div>
+          </div>
+
+          {/* Qatar Nationwide Delivery & WhatsApp Order Callout */}
+          <div style={{
+            background: "linear-gradient(135deg, rgba(6, 78, 59, 0.08) 0%, rgba(5, 150, 105, 0.12) 100%)",
+            border: "1.5px solid rgba(16, 185, 129, 0.35)",
+            borderRadius: "14px",
+            padding: "16px 18px",
+            margin: "20px 0 24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "14px"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "10px",
+                background: "#064e3b",
+                color: "#34d399",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.25rem",
+                flexShrink: 0
+              }}>
+                🇶🇦
+              </div>
+              <div>
+                <div style={{ fontSize: "0.9375rem", fontWeight: 800, color: "#064e3b", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>Official Delivery to Any Address in Qatar</span>
+                </div>
+                <div style={{ fontSize: "0.8125rem", color: "#047857", marginTop: "2px" }}>
+                  Doha, Lusail, Al Rayyan, Al Wakrah, Al Khor & all municipalities. Direct from Host Nani.
+                </div>
+              </div>
+            </div>
+
+            <a
+              href={`https://wa.me/97470284220?text=${encodeURIComponent(
+                `Hello Host Nani! I am on the NANI DOHA official site and want to order "${product.name}" (QAR ${product.price}) for delivery to my address in Qatar. Please confirm dispatch details! 🙏🏻`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-sm"
+              style={{
+                background: "#16a34a",
+                color: "#ffffff",
+                fontWeight: 700,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                boxShadow: "0 4px 12px rgba(22, 163, 74, 0.3)"
+              }}
+            >
+              <MessageCircle size={16} />
+              <span>Order via WhatsApp (+974 7028 4220)</span>
+            </a>
           </div>
 
           {/* Trust Guarantee List */}

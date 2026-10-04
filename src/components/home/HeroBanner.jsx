@@ -40,7 +40,7 @@ export const HeroBanner = () => {
             </h1>
 
             <p className="hero-description">
-              Welcome to NANI Qatar: Discover <strong>100% Original Nani Organic Hair Oil 🙏🏻</strong>, authentic Andhra & Japanese festive sarees, royal designer dresses, and certified gold & 925 silver jewellery. Direct personal delivery across Doha.
+              Welcome to NANI Qatar Official Store: Discover <strong>100% Original Nani Organic Hair Oil 🙏🏻</strong>, authentic Andhra & Japanese festive sarees, royal designer dresses, and certified gold & 925 silver jewellery. <strong>Direct doorstep delivery to any address across all of Qatar!</strong>
             </p>
 
             <div className="hero-btn-group">
@@ -57,7 +57,7 @@ export const HeroBanner = () => {
                 <span>Festive Saree Offers</span>
               </a>
               <a
-                href="https://wa.me/97470284220?text=Hello%20Nani!%20I%20would%20like%20to%20inquire%20about%20your%20products"
+                href="https://wa.me/97470284220?text=Hello%20Nani!%20I%20would%20like%20to%20order%20products%20for%20delivery%20to%20my%20address%20in%20Qatar"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-light btn-lg"
@@ -101,7 +101,7 @@ export const HeroBanner = () => {
                   <Star size={20} fill="#34d399" />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: "0.9375rem", color: "#f8fafc" }}>Rated 5.0 in Qatar</div>
+                  <div style={{ fontWeight: 800, fontSize: "0.9375rem", color: "#f8fafc" }}>Delivering Across Qatar</div>
                   <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>100% Original Nani Brand Seal</div>
                 </div>
               </div>
@@ -116,8 +116,8 @@ export const HeroBanner = () => {
               <Truck size={24} />
             </div>
             <div className="trust-info">
-              <h4>Free Express Delivery</h4>
-              <p>On all Doha orders above QAR 100</p>
+              <h4>All-Qatar Delivery</h4>
+              <p>Direct to any address across Qatar</p>
             </div>
           </div>
 

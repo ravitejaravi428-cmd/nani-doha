@@ -224,16 +224,35 @@ export const OrdersPage = () => {
                 )}
               </div>
 
-              <div style={{ background: "var(--bg-main)", borderRadius: "12px", padding: "16px", marginTop: "24px" }}>
-                <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--secondary)", marginBottom: "4px" }}>
-                  Delivery Address:
+              <div style={{ background: "var(--bg-main)", borderRadius: "12px", padding: "16px", marginTop: "24px", border: "1px solid var(--border-light)" }}>
+                <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--secondary)", marginBottom: "6px" }}>
+                  🇶🇦 Qatar Delivery Address:
                 </div>
-                <div style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
-                  {selectedOrder.shippingAddress.fullName} • {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.country}
+                <div style={{ fontSize: "0.875rem", color: "var(--secondary)", lineHeight: 1.5 }}>
+                  <strong>{selectedOrder.shippingAddress.fullName}</strong> ({selectedOrder.shippingAddress.phone})
+                  <br />
+                  {selectedOrder.shippingAddress.building || selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.street}{selectedOrder.shippingAddress.zone ? `, ${selectedOrder.shippingAddress.zone}` : ""}{selectedOrder.shippingAddress.area ? `, ${selectedOrder.shippingAddress.area}` : ""}, <strong>{selectedOrder.shippingAddress.city}, Qatar</strong>
+                  {selectedOrder.shippingAddress.landmark && (
+                    <div style={{ fontSize: "0.8125rem", color: "#059669", marginTop: "3px" }}>
+                      📍 Landmark: {selectedOrder.shippingAddress.landmark}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div style={{ marginTop: "24px", textAlign: "right" }}>
+              <div style={{ marginTop: "24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                <a
+                  href={`https://wa.me/97470284220?text=${encodeURIComponent(
+                    `Hello Host Nani! I am tracking my Order #${selectedOrder.id} for delivery to ${selectedOrder.shippingAddress.city || "Doha"}, Qatar. Could you please provide dispatch/delivery status? Thank you! 🙏🏻`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-sm"
+                  style={{ borderColor: "#16a34a", color: "#16a34a", fontWeight: 700 }}
+                >
+                  <span>Chat with Host on WhatsApp</span>
+                </a>
+
                 <button type="button" className="btn btn-secondary" onClick={() => setSelectedOrder(null)}>
                   Close Tracker
                 </button>

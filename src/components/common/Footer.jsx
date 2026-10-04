@@ -119,6 +119,11 @@ export const Footer = () => {
                   Privacy Policy
                 </a>
               </li>
+              <li>
+                <Link to="/creator/login" style={{ color: "#94a3b8" }}>
+                  Seller & Creator Studio Login
+                </Link>
+              </li>
             </ul>
           </div>
 

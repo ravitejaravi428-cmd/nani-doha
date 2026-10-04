@@ -11,8 +11,7 @@ import {
   PhoneCall,
   ShieldCheck,
   LogOut,
-  Package,
-  Flame
+  Package
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
@@ -343,17 +342,6 @@ export const Header = () => {
                   </span>
                 </Link>
 
-                <Link
-                  to="/admin"
-                  className="drawer-nav-link"
-                  style={{ padding: "8px 12px", fontSize: "0.875rem", color: "#d97706", fontWeight: 700 }}
-                  onClick={() => setIsUserDropdownOpen(false)}
-                >
-                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <ShieldCheck size={16} /> Host & Store Admin
-                  </span>
-                </Link>
-
                 <div style={{ height: "1px", background: "var(--border-subtle)", margin: "4px 0" }} />
 
                 <button
@@ -406,25 +394,6 @@ export const Header = () => {
             <li className="nav-item">
               <NavLink to="/products?category=accessories">
                 <span>✨ Gold & Silver Jewellery</span>
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/admin"
-                style={{
-                  backgroundColor: "#0f172a",
-                  color: "#f8fafc",
-                  padding: "4px 10px",
-                  borderRadius: "6px",
-                  fontWeight: 700,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "0.82rem"
-                }}
-              >
-                <ShieldCheck size={14} color="#f59e0b" />
-                <span>Host / Admin</span>
               </NavLink>
             </li>
           </ul>
@@ -557,11 +526,6 @@ export const Header = () => {
                 </li>
               </>
             )}
-            <li>
-              <NavLink to="/admin" className="drawer-nav-link" style={{ color: "#d97706", fontWeight: 700 }}>
-                🛡️ Host & Store Admin
-              </NavLink>
-            </li>
           </ul>
 
           {/* Category Quick Chips */}

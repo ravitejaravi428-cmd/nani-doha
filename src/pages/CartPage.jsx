@@ -7,7 +7,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Truck,
-  ShieldCheck
+  ShieldCheck,
+  MessageCircle
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
@@ -305,7 +306,7 @@ export const CartPage = () => {
               )}
             </div>
 
-            <div style={{ marginTop: "24px" }}>
+            <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "10px" }}>
               <button
                 type="button"
                 className="btn btn-primary btn-block btn-lg"
@@ -316,9 +317,39 @@ export const CartPage = () => {
                 <span>Proceed to Checkout</span>
                 <ArrowRight size={18} />
               </button>
+
+              <a
+                href={`https://wa.me/97470284220?text=${encodeURIComponent(
+                  `🛍️ *NANI QATAR - DIRECT WHATSAPP ORDER*\n` +
+                  `📦 *Cart Items:*\n${cart.map((i) => `• ${i.product.name} (x${i.quantity}) - QAR ${(i.product.price * i.quantity).toFixed(2)}`).join("\n")}\n\n` +
+                  `💰 *Total Amount:* QAR ${totalAmount.toFixed(2)}\n\n` +
+                  `Hello Host Nani! I want to order these items for delivery to my address in Qatar. Please guide me with delivery time!`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline btn-block"
+                style={{ borderColor: "#16a34a", color: "#16a34a", fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+              >
+                <MessageCircle size={18} />
+                <span>Order via WhatsApp (+974 7028 4220)</span>
+              </a>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "16px", fontSize: "0.75rem", color: "var(--text-muted)" }}>
+            <div style={{
+              marginTop: "16px",
+              padding: "12px",
+              borderRadius: "10px",
+              background: "rgba(16, 185, 129, 0.08)",
+              border: "1px solid rgba(16, 185, 129, 0.25)",
+              fontSize: "0.8125rem",
+              color: "#065f46",
+              lineHeight: 1.5
+            }}>
+              <strong>🇶🇦 Delivery to Any Address Across Qatar</strong>
+              <div>Doha, Lusail, Al Rayyan, Al Wakrah, Al Khor & all municipalities. Fast priority dispatch!</div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "14px", fontSize: "0.75rem", color: "var(--text-muted)" }}>
               <ShieldCheck size={14} color="#15803d" />
               <span>Encrypted 256-Bit SSL Checkout Protection</span>
             </div>

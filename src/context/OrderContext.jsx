@@ -197,16 +197,20 @@ export const OrderProvider = ({ children }) => {
       ]
     };
 
-    setOrders((prev) => [newOrder, ...prev]);
+    setOrders((prev) => {
+      const updated = [newOrder, ...prev];
+      try {
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
-    // Send to Firestore if connected
+    // Send to Firestore asynchronously if connected
     const db = getDb();
     if (db) {
-      try {
-        await setDoc(doc(db, "orders", orderId), newOrder);
-      } catch (err) {
-        console.error("Failed saving order to Firestore:", err);
-      }
+      setDoc(doc(db, "orders", orderId), newOrder).catch((err) => {
+        console.warn("Firestore order sync:", err);
+      });
     }
 
     return newOrder;

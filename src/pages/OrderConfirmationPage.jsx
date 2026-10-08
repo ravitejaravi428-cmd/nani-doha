@@ -18,6 +18,7 @@ import {
   OFFICIAL_QATAR_HOST_PHONE,
   OFFICIAL_QATAR_HOST_PHONE_DIGITS
 } from "../data/qatarLocations";
+import { getHostOrderWhatsAppUrl, buildHostOrderWhatsAppMessage } from "../utils/whatsapp";
 
 export const OrderConfirmationPage = () => {
   const { orderId } = useParams();
@@ -121,63 +122,94 @@ Hello Host Nani! I have placed this order on your official Qatar store. Please c
             </p>
           </div>
 
-          {/* Qatar Nationwide Delivery Notification */}
+          {/* WhatsApp Order Notification to Host Card */}
           <div style={{
             background: "linear-gradient(135deg, #064e3b 0%, #022c22 100%)",
-            border: "1.5px solid #059669",
-            borderRadius: "14px",
-            padding: "16px 20px",
+            border: "1.5px solid #10b981",
+            borderRadius: "16px",
+            padding: "20px 24px",
             color: "#f8fafc",
             marginBottom: "28px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "14px"
+            boxShadow: "0 10px 25px rgba(6, 78, 59, 0.25)"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: "rgba(52, 211, 153, 0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.3rem"
-              }}>
-                🚚
-              </div>
-              <div>
-                <div style={{ fontWeight: 800, color: "#34d399", fontSize: "0.9375rem" }}>
-                  Delivery to Any Address Across Qatar
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <div style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "14px",
+                  background: "#25d366",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  flexShrink: 0,
+                  boxShadow: "0 4px 12px rgba(37, 211, 102, 0.4)"
+                }}>
+                  <MessageCircle size={28} />
                 </div>
-                <div style={{ fontSize: "0.8125rem", color: "#cbd5e1" }}>
-                  Your parcel is dispatched by our dedicated team to your doorstep in <strong>{addr.city || "Qatar"}</strong>.
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                    <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "#34d399" }}>
+                      WhatsApp Alert Dispatched to Host (+974 7028 4220)
+                    </span>
+                    <span style={{
+                      background: "rgba(52, 211, 153, 0.2)",
+                      border: "1px solid #34d399",
+                      color: "#34d399",
+                      fontSize: "0.7rem",
+                      fontWeight: 800,
+                      padding: "2px 8px",
+                      borderRadius: "999px"
+                    }}>
+                      LIVE CONNECTED
+                    </span>
+                  </div>
+                  <div style={{ fontSize: "0.85rem", color: "#cbd5e1", marginTop: "4px" }}>
+                    Your order items and delivery address in <strong>{addr.city || "Qatar"}</strong> are formatted and ready for Host Nani on WhatsApp (+974 7028 4220) for express packing!
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              <a
-                href={`https://wa.me/${OFFICIAL_QATAR_HOST_PHONE_DIGITS}?text=${encodeURIComponent(whatsappMessage)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-sm"
-                style={{ background: "#16a34a", color: "#fff", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}
-              >
-                <MessageCircle size={16} />
-                <span>Send to Host on WhatsApp</span>
-              </a>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <a
+                  href={getHostOrderWhatsAppUrl(order)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                  style={{
+                    background: "#25d366",
+                    borderColor: "#25d366",
+                    color: "#ffffff",
+                    fontWeight: 800,
+                    padding: "10px 18px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    boxShadow: "0 4px 14px rgba(37, 211, 102, 0.4)"
+                  }}
+                >
+                  <MessageCircle size={18} />
+                  <span>Open WhatsApp with Host (+974 7028 4220)</span>
+                </a>
 
-              <a
-                href={`tel:${OFFICIAL_QATAR_HOST_PHONE_DIGITS}`}
-                className="btn btn-sm btn-outline"
-                style={{ borderColor: "#34d399", color: "#34d399", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}
-              >
-                <PhoneCall size={15} />
-                <span>+974 7028 4220</span>
-              </a>
+                <a
+                  href={`tel:${OFFICIAL_QATAR_HOST_PHONE_DIGITS}`}
+                  className="btn btn-outline"
+                  style={{
+                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    color: "#ffffff",
+                    fontWeight: 700,
+                    padding: "10px 18px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <PhoneCall size={16} />
+                  <span>Call +974 7028 4220</span>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -235,12 +267,12 @@ Hello Host Nani! I have placed this order on your official Qatar store. Please c
               {order.items.map((item) => (
                 <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "16px", paddingBottom: "12px", borderBottom: "1px solid var(--border-subtle)" }}>
                   <img
-                    src={item.product.images[0]}
-                    alt={item.product.name}
+                    src={item.product?.images?.[0] || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"}
+                    alt={item.product?.name || "Product"}
                     style={{ width: "60px", height: "60px", borderRadius: "8px", objectFit: "cover" }}
                   />
                   <div style={{ flex: 1 }}>
-                    <h4 style={{ fontSize: "0.9375rem", fontWeight: 700 }}>{item.product.name}</h4>
+                    <h4 style={{ fontSize: "0.9375rem", fontWeight: 700 }}>{item.product?.name || "Handcrafted Product"}</h4>
                     <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                       {item.selectedColor && `Color: ${item.selectedColor} • `}
                       {item.selectedSize && `Size: ${item.selectedSize} • `}
@@ -248,7 +280,7 @@ Hello Host Nani! I have placed this order on your official Qatar store. Please c
                     </div>
                   </div>
                   <div style={{ fontWeight: 800, fontSize: "1rem" }}>
-                    QAR {(item.product.price * item.quantity).toFixed(2)}
+                    QAR {((item.product?.price || 0) * item.quantity).toFixed(2)}
                   </div>
                 </div>
               ))}

@@ -24,7 +24,7 @@ export const Header = () => {
   const location = useLocation();
   const { itemCount } = useCart();
   const { wishlistCount } = useWishlist();
-  const { user, isAuthenticated, logout, quickDemoLogin } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { products } = useProducts();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -90,9 +90,9 @@ export const Header = () => {
       <div className="top-bar">
         <div className="container top-bar-inner">
           <div className="top-bar-notice">
-            <span className="top-bar-badge" style={{ background: "#dc2626" }}>Festive Offer</span>
+            <span className="top-bar-badge" style={{ background: "#059669" }}>Official Web</span>
             <span>
-              🥻 <strong>నాని ఆంధ్ర చీరలు Bumper Offer:</strong> 10% OFF with code <strong>SAREE10</strong> | 5% OFF with code <strong>NANI5</strong>
+              ✨ <strong>NANI DOHA Official Web Store:</strong> Authentic Handloom Silks & Pure Herbal Care | 10% OFF with code <strong>SAREE10</strong>
             </span>
           </div>
 
@@ -139,10 +139,24 @@ export const Header = () => {
             <ShoppingBag size={22} />
           </div>
           <div className="brand-text">
-            <span className="brand-name">
-              NANI <span>DOHA</span>
-            </span>
-            <span className="brand-sub">Luxury & Lifestyle</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span className="brand-name">
+                NANI <span>DOHA</span>
+              </span>
+              <span style={{ 
+                background: "linear-gradient(135deg, #10b981, #059669)", 
+                color: "#fff", 
+                fontSize: "0.625rem", 
+                fontWeight: 800, 
+                padding: "2px 6px", 
+                borderRadius: "4px",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase" 
+              }}>
+                OFFICIAL
+              </span>
+            </div>
+            <span className="brand-sub">Official Web Store • Qatar & GCC</span>
           </div>
         </Link>
 
@@ -472,16 +486,13 @@ export const Header = () => {
               >
                 Sign In
               </Link>
-              <button
-                type="button"
+              <Link
+                to="/register"
                 className="btn btn-outline btn-block btn-sm"
-                onClick={() => {
-                  quickDemoLogin();
-                  setIsMobileMenuOpen(false);
-                }}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                Demo
-              </button>
+                Register
+              </Link>
             </div>
           )}
 

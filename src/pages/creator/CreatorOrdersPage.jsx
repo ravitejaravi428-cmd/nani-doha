@@ -8,13 +8,19 @@ import {
   Phone, 
   User, 
   CreditCard, 
-  Calendar
+  Calendar,
+  Trash2,
+  Sparkles,
+  ExternalLink,
+  MessageCircle
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useOrders } from "../../context/OrderContext";
 import { useToast } from "../../context/ToastContext";
+import { notifyHostOnWhatsApp, getHostOrderWhatsAppUrl } from "../../utils/whatsapp";
 
 export const CreatorOrdersPage = () => {
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, deleteOrder, clearAllOrders, createTrialOrder } = useOrders();
   const { showToast } = useToast();
 
   const [statusFilter, setStatusFilter] = useState("all");
@@ -47,18 +53,104 @@ export const CreatorOrdersPage = () => {
     showToast(`Order ${orderId} status updated to: ${newStatus}. Customer tracking timeline synchronized!`, "success");
   };
 
+  const handleClearAllOrders = async () => {
+    if (window.confirm("⚠️ Clear ALL orders from the creator/admin list?")) {
+      await clearAllOrders();
+      showToast("All orders cleared! List is now empty.", "info");
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm(`Delete Order #${orderId} permanently?`)) {
+      await deleteOrder(orderId);
+      showToast(`Order #${orderId} removed.`, "info");
+    }
+  };
+
+  const handleCreateTrialOrder = async (preset = "saree") => {
+    const newOrder = await createTrialOrder(preset);
+    showToast(`Official Trial Order #${newOrder.id} generated! WhatsApp alert dispatched to Host (+974 7028 4220).`, "success");
+    notifyHostOnWhatsApp(newOrder);
+  };
+
   return (
     <div style={{ background: "#0b0f19", minHeight: "calc(100vh - 120px)", color: "#f8fafc", padding: "32px 20px 80px" }}>
       <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
         
         {/* Header */}
-        <div style={{ marginBottom: "28px" }}>
-          <h1 style={{ fontSize: "1.75rem", fontWeight: 800, margin: 0, color: "#ffffff" }}>
-            Orders Received & Fulfillment
-          </h1>
-          <p style={{ margin: "4px 0 0", fontSize: "0.875rem", color: "#94a3b8" }}>
-            Manage customer purchases, pack shipments, and dispatch orders across Qatar & GCC
-          </p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "28px" }}>
+          <div>
+            <h1 style={{ fontSize: "1.75rem", fontWeight: 800, margin: 0, color: "#ffffff" }}>
+              Orders Received & Fulfillment
+            </h1>
+            <p style={{ margin: "4px 0 0", fontSize: "0.875rem", color: "#94a3b8" }}>
+              Manage customer purchases, pack shipments, and dispatch orders across Qatar & GCC
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+            {orders.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearAllOrders}
+                style={{
+                  background: "rgba(239, 68, 68, 0.15)",
+                  color: "#f87171",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                  padding: "8px 14px",
+                  borderRadius: "8px",
+                  fontSize: "0.8125rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                <Trash2 size={14} /> Clear All Orders
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => handleCreateTrialOrder("saree")}
+              style={{
+                background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                color: "#ffffff",
+                border: "none",
+                padding: "8px 14px",
+                borderRadius: "8px",
+                fontSize: "0.8125rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px"
+              }}
+            >
+              <Sparkles size={14} /> + Saree Trial Order
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleCreateTrialOrder("oil")}
+              style={{
+                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                color: "#ffffff",
+                border: "none",
+                padding: "8px 14px",
+                borderRadius: "8px",
+                fontSize: "0.8125rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px"
+              }}
+            >
+              <Sparkles size={14} /> + Hair Oil Trial Order
+            </button>
+          </div>
         </div>
 
         {/* Filter Bar */}
@@ -148,9 +240,72 @@ export const CreatorOrdersPage = () => {
             textAlign: "center",
             color: "#94a3b8"
           }}>
-            <ShoppingBag size={48} style={{ margin: "0 auto 16px", opacity: 0.3 }} />
-            <h3 style={{ color: "#ffffff", fontSize: "1.1rem", margin: "0 0 6px" }}>No orders found</h3>
-            <p style={{ margin: 0, fontSize: "0.875rem" }}>No customer orders match your selected filters.</p>
+            <ShoppingBag size={48} style={{ margin: "0 auto 16px", opacity: 0.5, color: "#10b981" }} />
+            <h3 style={{ color: "#ffffff", fontSize: "1.25rem", margin: "0 0 8px", fontWeight: 800 }}>
+              Orders List Cleared & Ready
+            </h3>
+            <p style={{ margin: "0 auto 20px", fontSize: "0.875rem", maxWidth: "520px", lineHeight: 1.6 }}>
+              All legacy admin orders have been cleared. You are ready to receive live purchases or generate official trial orders to verify the full dispatch flow.
+            </p>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={() => handleCreateTrialOrder("saree")}
+                style={{
+                  background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "10px 18px",
+                  borderRadius: "8px",
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                <Sparkles size={16} /> + Generate Saree Trial Order
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCreateTrialOrder("oil")}
+                style={{
+                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "10px 18px",
+                  borderRadius: "8px",
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                <Sparkles size={16} /> + Generate Hair Oil Trial Order
+              </button>
+              <Link
+                to="/products"
+                target="_blank"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  color: "#ffffff",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  padding: "10px 18px",
+                  borderRadius: "8px",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                <ExternalLink size={16} /> Shop Live as Customer
+              </Link>
+            </div>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -361,6 +516,51 @@ export const CreatorOrdersPage = () => {
                       >
                         <CheckCircle2 size={14} />
                         <span>Mark Delivered</span>
+                      </button>
+
+                      <a
+                        href={getHostOrderWhatsAppUrl(order)}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          background: "rgba(34, 197, 94, 0.15)",
+                          color: "#4ade80",
+                          border: "1px solid rgba(34, 197, 94, 0.3)",
+                          padding: "6px 12px",
+                          borderRadius: "6px",
+                          fontSize: "0.8125rem",
+                          fontWeight: 600,
+                          textDecoration: "none",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px"
+                        }}
+                        title="Send full order notification to Host WhatsApp (+974 7028 4220)"
+                      >
+                        <MessageCircle size={13} />
+                        <span>WhatsApp Host (+974 7028 4220)</span>
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteOrder(order.id)}
+                        style={{
+                          background: "rgba(239, 68, 68, 0.15)",
+                          color: "#f87171",
+                          border: "1px solid rgba(239, 68, 68, 0.3)",
+                          padding: "6px 12px",
+                          borderRadius: "6px",
+                          fontSize: "0.8125rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px"
+                        }}
+                        title="Delete order permanently"
+                      >
+                        <Trash2 size={13} />
+                        <span>Delete</span>
                       </button>
                     </div>
                   </div>

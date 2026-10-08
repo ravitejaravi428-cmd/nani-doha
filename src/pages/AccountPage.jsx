@@ -16,7 +16,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { useToast } from "../context/ToastContext";
 
 export const AccountPage = () => {
-  const { user, isAuthenticated, logout, updateProfile, savedAddresses, addAddress, removeAddress, setDefaultAddress, quickDemoLogin } = useAuth();
+  const { user, isAuthenticated, logout, updateProfile, savedAddresses, addAddress, removeAddress, setDefaultAddress } = useAuth();
   const { orders } = useOrders();
   const { wishlistCount } = useWishlist();
   const { showToast } = useToast();
@@ -53,13 +53,13 @@ export const AccountPage = () => {
           <p style={{ color: "var(--text-muted)" }}>
             Sign in to view your orders, saved addresses, and VIP membership privileges.
           </p>
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "20px" }}>
             <Link to="/login" className="btn btn-primary">
               Sign In
             </Link>
-            <button type="button" className="btn btn-outline" onClick={quickDemoLogin}>
-              Instant Demo Login
-            </button>
+            <Link to="/register" className="btn btn-outline">
+              Create Account
+            </Link>
           </div>
         </div>
       </div>
@@ -334,65 +334,78 @@ export const AccountPage = () => {
                   </form>
                 )}
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                  {savedAddresses.map((addr) => (
-                    <div
-                      key={addr.id}
-                      style={{
-                        padding: "16px",
-                        border: "1.5px solid var(--border-light)",
-                        borderRadius: "12px",
-                        background: addr.isDefault ? "var(--primary-light)" : "#fff",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "8px"
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontWeight: 700 }}>{addr.fullName}</span>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ fontSize: "0.6875rem", background: "var(--bg-input)", padding: "2px 6px", borderRadius: "4px", fontWeight: 700 }}>
-                            {addr.type || "Home"}
-                          </span>
-                          {addr.isDefault && (
-                            <span style={{ fontSize: "0.6875rem", background: "#dcfce7", color: "#15803d", padding: "2px 6px", borderRadius: "4px", fontWeight: 700 }}>
-                              Default
+                {savedAddresses.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "36px 20px", background: "var(--bg-main)", borderRadius: "14px", border: "1.5px dashed var(--border-light)" }}>
+                    <MapPin size={36} color="var(--primary)" style={{ marginBottom: "10px", opacity: 0.8 }} />
+                    <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--secondary)" }}>No Saved Addresses</div>
+                    <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginTop: "4px", marginBottom: "16px", maxWidth: "400px", margin: "4px auto 16px" }}>
+                      You haven't added any delivery addresses yet. Your Qatar delivery address will be saved here automatically when you place an order.
+                    </p>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={() => setShowAddressForm(true)}>
+                      <Plus size={14} /> Add Delivery Address Now
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                    {savedAddresses.map((addr) => (
+                      <div
+                        key={addr.id}
+                        style={{
+                          padding: "16px",
+                          border: "1.5px solid var(--border-light)",
+                          borderRadius: "12px",
+                          background: addr.isDefault ? "var(--primary-light)" : "#fff",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px"
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ fontWeight: 700 }}>{addr.fullName}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span style={{ fontSize: "0.6875rem", background: "var(--bg-input)", padding: "2px 6px", borderRadius: "4px", fontWeight: 700 }}>
+                              {addr.type || "Home"}
                             </span>
-                          )}
+                            {addr.isDefault && (
+                              <span style={{ fontSize: "0.6875rem", background: "#dcfce7", color: "#15803d", padding: "2px 6px", borderRadius: "4px", fontWeight: 700 }}>
+                                Default
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
 
-                      <div style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
-                        {addr.street}
-                        <br />
-                        {addr.city}, {addr.country}
-                        <br />
-                        Phone: {addr.phone}
-                      </div>
+                        <div style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
+                          {addr.building ? `${addr.building}, ` : ""}{addr.street}
+                          <br />
+                          {addr.area ? `${addr.area}, ` : ""}{addr.city}, Qatar
+                          <br />
+                          Phone: {addr.phone}
+                        </div>
 
-                      <div style={{ display: "flex", gap: "12px", marginTop: "8px", borderTop: "1px solid var(--border-subtle)", paddingTop: "8px" }}>
-                        {!addr.isDefault && (
+                        <div style={{ display: "flex", gap: "12px", marginTop: "8px", borderTop: "1px solid var(--border-subtle)", paddingTop: "8px" }}>
+                          {!addr.isDefault && (
+                            <button
+                              type="button"
+                              className="cart-action-link"
+                              onClick={() => setDefaultAddress(addr.id)}
+                              style={{ fontSize: "0.75rem", color: "var(--primary)", fontWeight: 700 }}
+                            >
+                              Set as Default
+                            </button>
+                          )}
                           <button
                             type="button"
-                            className="cart-action-link"
-                            onClick={() => setDefaultAddress(addr.id)}
-                            style={{ fontSize: "0.75rem" }}
+                            className="cart-action-link danger"
+                            onClick={() => removeAddress(addr.id)}
+                            style={{ fontSize: "0.75rem", marginLeft: "auto" }}
                           >
-                            Set as Default
+                            <Trash2 size={13} /> Delete
                           </button>
-                        )}
-                        <button
-                          type="button"
-                          className="cart-action-link danger"
-                          onClick={() => removeAddress(addr.id)}
-                          style={{ fontSize: "0.75rem", marginLeft: "auto" }}
-                        >
-                          <Trash2 size={13} /> Delete
-                        </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

@@ -5,104 +5,40 @@ import {
   collection, 
   doc, 
   setDoc, 
+  deleteDoc,
+  getDocs,
   onSnapshot 
 } from "../services/firebase";
 
 const OrderContext = createContext(null);
 const ORDERS_STORAGE_KEY = "nanidoha_orders";
-
-const INITIAL_ORDERS = [
-  {
-    id: "ND-948210",
-    orderDate: "2026-09-26T14:32:00Z",
-    estimatedDelivery: "2026-10-02",
-    status: "Out for Delivery",
-    items: [
-      {
-        id: "prod-2-Midnight Black-null",
-        productId: "prod-2",
-        product: PRODUCTS[1],
-        quantity: 1,
-        selectedColor: "Midnight Black",
-        selectedSize: null
-      },
-      {
-        id: "prod-11-Washed Slate Charcoal-L",
-        productId: "prod-11",
-        product: PRODUCTS[10],
-        quantity: 2,
-        selectedColor: "Washed Slate Charcoal",
-        selectedSize: "L"
-      }
-    ],
-    shippingAddress: {
-      fullName: "Nani Doha",
-      phone: "+974 5512 3456",
-      street: "Villa 42, Street 810, Zone 66",
-      area: "West Bay Lagoon",
-      city: "Doha",
-      country: "Qatar"
-    },
-    paymentMethod: "Credit Card (ending in •••• 4242)",
-    subtotal: 439,
-    discount: 43.9,
-    shippingFee: 0,
-    tax: 19.76,
-    totalAmount: 414.86,
-    trackingSteps: [
-      { title: "Order Placed", date: "Sep 26, 02:32 PM", completed: true },
-      { title: "Confirmed & Packed", date: "Sep 27, 09:15 AM", completed: true },
-      { title: "Shipped from Hub", date: "Sep 28, 11:40 AM", completed: true },
-      { title: "Out for Delivery", date: "Today, 08:30 AM", completed: true },
-      { title: "Delivered", date: "Estimated Today by 6 PM", completed: false }
-    ]
-  },
-  {
-    id: "ND-820194",
-    orderDate: "2026-09-12T10:15:00Z",
-    estimatedDelivery: "2026-09-15",
-    status: "Delivered",
-    items: [
-      {
-        id: "prod-6-Gloss White-null",
-        productId: "prod-6",
-        product: PRODUCTS[5],
-        quantity: 1,
-        selectedColor: "Gloss White",
-        selectedSize: null
-      }
-    ],
-    shippingAddress: {
-      fullName: "Nani Doha",
-      phone: "+974 5512 3456",
-      street: "Porto Arabia Tower 12, Floor 8, Suite 804",
-      area: "The Pearl-Qatar",
-      city: "Doha",
-      country: "Qatar"
-    },
-    paymentMethod: "Cash on Delivery",
-    subtotal: 199,
-    discount: 0,
-    shippingFee: 0,
-    tax: 9.95,
-    totalAmount: 208.95,
-    trackingSteps: [
-      { title: "Order Placed", date: "Sep 12, 10:15 AM", completed: true },
-      { title: "Confirmed & Packed", date: "Sep 12, 01:20 PM", completed: true },
-      { title: "Shipped from Hub", date: "Sep 13, 08:00 AM", completed: true },
-      { title: "Out for Delivery", date: "Sep 14, 09:10 AM", completed: true },
-      { title: "Delivered", date: "Sep 14, 03:45 PM", completed: true }
-    ]
-  }
-];
+const ORDERS_CLEARED_FLAG = "nanidoha_orders_fresh_v3";
 
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState(() => {
     try {
+      // Check if we need to clean up legacy mock orders
+      const hasCleanedLegacy = localStorage.getItem(ORDERS_CLEARED_FLAG);
+      if (!hasCleanedLegacy) {
+        localStorage.removeItem(ORDERS_STORAGE_KEY);
+        localStorage.setItem(ORDERS_CLEARED_FLAG, "true");
+        return [];
+      }
+
       const stored = localStorage.getItem(ORDERS_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : INITIAL_ORDERS;
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // If parsed orders only contain legacy IDs (ND-948210, ND-820194), wipe them
+        const isLegacyOnly = parsed.every((o) => o.id === "ND-948210" || o.id === "ND-820194");
+        if (isLegacyOnly) {
+          localStorage.removeItem(ORDERS_STORAGE_KEY);
+          return [];
+        }
+        return Array.isArray(parsed) ? parsed : [];
+      }
+      return [];
     } catch {
-      return INITIAL_ORDERS;
+      return [];
     }
   });
 
@@ -244,6 +180,221 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  const deleteOrder = async (orderId) => {
+    setOrders((prev) => {
+      const updated = prev.filter((o) => o.id !== orderId);
+      try {
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    const db = getDb();
+    if (db) {
+      try {
+        await deleteDoc(doc(db, "orders", orderId));
+      } catch (err) {
+        console.warn("Failed deleting order in Firestore:", err);
+      }
+    }
+  };
+
+  const clearAllOrders = async () => {
+    setOrders([]);
+    try {
+      localStorage.removeItem(ORDERS_STORAGE_KEY);
+    } catch (e) {}
+
+    const db = getDb();
+    if (db) {
+      try {
+        const snapshot = await getDocs(collection(db, "orders"));
+        snapshot.forEach(async (docSnap) => {
+          await deleteDoc(doc(db, "orders", docSnap.id));
+        });
+      } catch (err) {
+        console.warn("Failed clearing orders in Firestore:", err);
+      }
+    }
+  };
+
+  const createTrialOrder = async (preset = "saree") => {
+    const orderNum = Math.floor(100000 + Math.random() * 900000);
+    const orderId = `ND-${orderNum}`;
+    const now = new Date();
+    const deliveryDate = new Date();
+    deliveryDate.setDate(now.getDate() + 2);
+
+    const sareeProd = PRODUCTS.find((p) => p.category === "sarees") || PRODUCTS[0];
+    const oilProd = PRODUCTS.find((p) => p.category === "beauty" || p.name.toLowerCase().includes("oil")) || PRODUCTS[1] || PRODUCTS[0];
+
+    let items = [];
+    let subtotal = 0;
+    let discount = 0;
+
+    if (preset === "oil") {
+      items = [
+        {
+          id: `item-${oilProd.id}-${Date.now()}`,
+          productId: oilProd.id,
+          quantity: 2,
+          selectedColor: "100% Pure Botanical",
+          selectedSize: "200ml Family Pack",
+          product: {
+            id: oilProd.id,
+            name: oilProd.name,
+            price: oilProd.price,
+            images: oilProd.images || [],
+            category: oilProd.category || "beauty",
+            brand: oilProd.brand || "Nani Organics"
+          }
+        }
+      ];
+      subtotal = oilProd.price * 2;
+      discount = 0;
+    } else if (preset === "combo") {
+      items = [
+        {
+          id: `item-${sareeProd.id}-${Date.now()}-1`,
+          productId: sareeProd.id,
+          quantity: 1,
+          selectedColor: sareeProd.colors?.[0]?.name || "Royal Sapphire Blue",
+          selectedSize: "Free Size (5.5m + Blouse)",
+          product: {
+            id: sareeProd.id,
+            name: sareeProd.name,
+            price: sareeProd.price,
+            images: sareeProd.images || [],
+            category: sareeProd.category || "sarees",
+            brand: sareeProd.brand || "Nani Andhra Sarees"
+          }
+        },
+        {
+          id: `item-${oilProd.id}-${Date.now()}-2`,
+          productId: oilProd.id,
+          quantity: 1,
+          selectedColor: "Cold-Pressed Herb Infusion",
+          selectedSize: "200ml",
+          product: {
+            id: oilProd.id,
+            name: oilProd.name,
+            price: oilProd.price,
+            images: oilProd.images || [],
+            category: oilProd.category || "beauty",
+            brand: oilProd.brand || "Nani Organics"
+          }
+        }
+      ];
+      subtotal = sareeProd.price + oilProd.price;
+      discount = Number((sareeProd.price * 0.1).toFixed(2)); // 10% coupon
+    } else {
+      // Default: Saree trial order
+      items = [
+        {
+          id: `item-${sareeProd.id}-${Date.now()}`,
+          productId: sareeProd.id,
+          quantity: 1,
+          selectedColor: sareeProd.colors?.[0]?.name || "Royal Sapphire Blue",
+          selectedSize: "Free Size (5.5m + Blouse)",
+          product: {
+            id: sareeProd.id,
+            name: sareeProd.name,
+            price: sareeProd.price,
+            images: sareeProd.images || [],
+            category: sareeProd.category || "sarees",
+            brand: sareeProd.brand || "Nani Andhra Sarees"
+          }
+        }
+      ];
+      subtotal = sareeProd.price;
+      discount = Number((sareeProd.price * 0.1).toFixed(2));
+    }
+
+    const taxableAmount = Math.max(0, subtotal - discount);
+    const tax = Number((taxableAmount * 0.05).toFixed(2));
+    const totalAmount = Number((taxableAmount + tax).toFixed(2));
+
+    const trialAddresses = [
+      {
+        fullName: "Fatima Al-Thani (Official Trial)",
+        phone: "+974 7028 4220",
+        street: "Tower 14, Porto Arabia, Suite 1204",
+        area: "The Pearl-Qatar",
+        city: "Doha",
+        country: "Qatar",
+        landmark: "Marina Promenade Gate 3"
+      },
+      {
+        fullName: "Mohammed Al-Sulaiti (Official Trial)",
+        phone: "+974 7028 4220",
+        street: "Villa 38, Street 705, Zone 66",
+        area: "West Bay Lagoon",
+        city: "Doha",
+        country: "Qatar",
+        landmark: "Near Lagoona Mall & Katara"
+      },
+      {
+        fullName: "Ravi Teja (Qatar Concierge Trial)",
+        phone: "+974 7028 4220",
+        street: "Marina Residence Tower 2, Lusail City",
+        area: "Lusail Marina",
+        city: "Lusail",
+        country: "Qatar",
+        landmark: "Opposite Lusail Promenade"
+      }
+    ];
+
+    const chosenAddr = trialAddresses[Math.floor(Math.random() * trialAddresses.length)];
+
+    const trialOrder = {
+      id: orderId,
+      orderDate: now.toISOString(),
+      estimatedDelivery: deliveryDate.toISOString().split("T")[0],
+      status: "Confirmed",
+      isTrialOrder: true,
+      items,
+      shippingAddress: chosenAddr,
+      paymentMethod: "Cash on Delivery (Qatar Express)",
+      subtotal,
+      discount,
+      shippingFee: 0,
+      tax,
+      totalAmount,
+      trackingSteps: [
+        {
+          title: "Order Placed",
+          date: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          completed: true
+        },
+        { title: "Confirmed & Packed", date: "Artisan Quality Check Complete", completed: true },
+        { title: "Shipped from Hub", date: "Scheduled for Qatar Flight Express", completed: false },
+        { title: "Out for Delivery", date: "Local Doha Courier", completed: false },
+        {
+          title: "Delivered",
+          date: `Estimated ${deliveryDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
+          completed: false
+        }
+      ]
+    };
+
+    setOrders((prev) => {
+      const updated = [trialOrder, ...prev];
+      try {
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    const db = getDb();
+    if (db) {
+      setDoc(doc(db, "orders", orderId), trialOrder).catch((err) => {
+        console.warn("Firestore trial order sync:", err);
+      });
+    }
+
+    return trialOrder;
+  };
+
   const getOrderById = (orderId) => {
     return orders.find((o) => o.id === orderId);
   };
@@ -254,6 +405,9 @@ export const OrderProvider = ({ children }) => {
         orders,
         createOrder,
         updateOrderStatus,
+        deleteOrder,
+        clearAllOrders,
+        createTrialOrder,
         getOrderById
       }}
     >

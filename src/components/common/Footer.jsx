@@ -23,11 +23,13 @@ export const Footer = () => {
                 <span className="brand-name" style={{ color: "#fff" }}>
                   NANI <span>DOHA</span>
                 </span>
-                <span className="brand-sub" style={{ color: "#94a3b8" }}>Luxury & Lifestyle</span>
+                <span className="brand-sub" style={{ color: "#10b981", fontWeight: 700, letterSpacing: "0.05em" }}>
+                  OFFICIAL WEB STORE
+                </span>
               </div>
             </Link>
             <p>
-              NANI DOHA is the premier shopping destination in Qatar and worldwide, delivering curated consumer electronics, designer fashion, footwear, smart home appliances, and rare fragrances with express white-glove delivery.
+              NANI DOHA Official Web Store is the verified premier destination for authentic Andhra Pradesh handloom silk sarees, bridal collections, pure organic herbal hair oil, and luxury lifestyle, delivering directly with white-glove concierge across Qatar and GCC.
             </p>
             <div className="social-links">
               <a

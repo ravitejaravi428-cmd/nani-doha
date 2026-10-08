@@ -81,12 +81,26 @@ export const CreatorProvider = ({ children }) => {
 
   const [payouts, setPayouts] = useState(() => {
     try {
+      const hasCleanedLegacy = localStorage.getItem("nanidoha_payouts_fresh_v3");
+      if (!hasCleanedLegacy) {
+        localStorage.removeItem(PAYOUTS_STORAGE_KEY);
+        localStorage.setItem("nanidoha_payouts_fresh_v3", "true");
+        return [];
+      }
       const stored = localStorage.getItem(PAYOUTS_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_PAYOUTS;
+      return stored ? JSON.parse(stored) : [];
     } catch {
-      return DEFAULT_PAYOUTS;
+      return [];
     }
   });
+
+  const clearPayouts = () => {
+    setPayouts([]);
+    try {
+      localStorage.removeItem(PAYOUTS_STORAGE_KEY);
+    } catch (e) {}
+    showToast("Payout history reset to 0!", "info");
+  };
 
   // Persist creator profile
   useEffect(() => {
@@ -236,7 +250,8 @@ export const CreatorProvider = ({ children }) => {
         loginCreator,
         registerCreator,
         logoutCreator,
-        quickDemoCreatorLogin
+        quickDemoCreatorLogin,
+        clearPayouts
       }}
     >
       {children}

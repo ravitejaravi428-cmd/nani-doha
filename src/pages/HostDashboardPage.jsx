@@ -21,16 +21,18 @@ import {
   X,
   Layers,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  MessageCircle
 } from "lucide-react";
 import { useProducts } from "../context/ProductContext";
 import { useOrders } from "../context/OrderContext";
 import { useToast } from "../context/ToastContext";
 import { getActiveFirebaseConfig, saveFirebaseConfig, getDb } from "../services/firebase";
+import { notifyHostOnWhatsApp, getHostOrderWhatsAppUrl } from "../utils/whatsapp";
 
 export const HostDashboardPage = () => {
   const { products, addProduct, updateProduct, deleteProduct, seedCloudWithDefaults, isCloudConnected, setIsCloudConnected } = useProducts();
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, deleteOrder, clearAllOrders, createTrialOrder } = useOrders();
   const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState("orders"); // "orders" | "products" | "database"
@@ -177,6 +179,26 @@ export const HostDashboardPage = () => {
     showToast(`Order #${orderId} marked as ${newStatus}`, "success");
   };
 
+  const handleClearAllOrders = async () => {
+    if (window.confirm("⚠️ Are you sure you want to clear ALL orders from the admin list? This will reset your orders to fresh.")) {
+      await clearAllOrders();
+      showToast("All orders cleared! Admin list is now fresh and ready.", "info");
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm(`Delete Order #${orderId} permanently?`)) {
+      await deleteOrder(orderId);
+      showToast(`Order #${orderId} removed from admin list.`, "info");
+    }
+  };
+
+  const handleCreateTrialOrder = async (preset = "saree") => {
+    const newOrder = await createTrialOrder(preset);
+    showToast(`Official Trial Order #${newOrder.id} generated! WhatsApp alert dispatched to Host (+974 7028 4220).`, "success");
+    notifyHostOnWhatsApp(newOrder);
+  };
+
   const handleSaveFirebaseKeys = (e) => {
     e.preventDefault();
     if (!dbConfig.projectId || !dbConfig.apiKey) {
@@ -303,7 +325,7 @@ export const HostDashboardPage = () => {
           }}>
             <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1.2rem", border: "1px solid rgba(255,255,255,0.1)" }}>
               <div style={{ color: "#94a3b8", fontSize: "0.85rem", fontWeight: 600 }}>Total Revenue</div>
-              <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#38bdf8", marginTop: "0.3rem" }}>${stats.totalRevenue}</div>
+              <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#38bdf8", marginTop: "0.3rem" }}>QAR {stats.totalRevenue}</div>
             </div>
 
             <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1.2rem", border: "1px solid rgba(255,255,255,0.1)" }}>
@@ -386,8 +408,8 @@ export const HostDashboardPage = () => {
         {/* TAB 1: CUSTOMER ORDERS */}
         {activeTab === "orders" && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "1rem" }}>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
                 {["all", "Confirmed", "Shipped", "Delivered"].map((status) => (
                   <button
                     key={status}
@@ -403,17 +425,145 @@ export const HostDashboardPage = () => {
                       cursor: "pointer"
                     }}
                   >
-                    {status === "all" ? "All Orders" : status}
+                    {status === "all" ? `All Orders (${orders.length})` : status}
                   </button>
                 ))}
+              </div>
+
+              {/* Order Actions: Clear All Orders and Quick Trial Orders */}
+              <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", alignItems: "center" }}>
+                {orders.length > 0 && (
+                  <button
+                    onClick={handleClearAllOrders}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      padding: "0.45rem 0.85rem",
+                      borderRadius: "8px",
+                      border: "1px solid #fecaca",
+                      backgroundColor: "#fef2f2",
+                      color: "#dc2626",
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                    title="Clear all orders to start fresh"
+                  >
+                    <Trash2 size={15} /> Clear All Orders
+                  </button>
+                )}
+
+                <div style={{ display: "inline-flex", gap: "0.4rem" }}>
+                  <button
+                    onClick={() => handleCreateTrialOrder("saree")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      padding: "0.45rem 0.85rem",
+                      borderRadius: "8px",
+                      border: "1px solid #fed7aa",
+                      backgroundColor: "#fff7ed",
+                      color: "#ea580c",
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                    title="Generate an official trial order with Festive Silk Saree"
+                  >
+                    <Sparkles size={15} /> + Saree Trial Order
+                  </button>
+                  <button
+                    onClick={() => handleCreateTrialOrder("oil")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      padding: "0.45rem 0.85rem",
+                      borderRadius: "8px",
+                      border: "1px solid #bbf7d0",
+                      backgroundColor: "#f0fdf4",
+                      color: "#16a34a",
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                    title="Generate an official trial order with Nani Organic Hair Oil"
+                  >
+                    <Sparkles size={15} /> + Hair Oil Trial Order
+                  </button>
+                </div>
               </div>
             </div>
 
             {filteredOrders.length === 0 ? (
-              <div style={{ background: "#fff", padding: "3rem", textAlign: "center", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-                <Package size={48} style={{ color: "#94a3b8", marginBottom: "1rem" }} />
-                <h3>No Orders Found</h3>
-                <p style={{ color: "#64748b" }}>When customers operate the store and check out, their orders appear here in real-time!</p>
+              <div style={{ background: "#fff", padding: "3.5rem 2rem", textAlign: "center", borderRadius: "14px", border: "1px solid #e2e8f0" }}>
+                <div style={{ width: "64px", height: "64px", margin: "0 auto 1.25rem", borderRadius: "50%", background: "#f0fdf4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Package size={32} style={{ color: "#16a34a" }} />
+                </div>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#0f172a", marginBottom: "0.5rem" }}>
+                  Admin Order List is Clear & Ready!
+                </h3>
+                <p style={{ color: "#64748b", maxWidth: "560px", margin: "0 auto 1.5rem", fontSize: "0.925rem", lineHeight: 1.6 }}>
+                  The store is running in clean official mode with 0 legacy orders. You can now start fresh by creating test trial orders below or shopping directly from the customer storefront!
+                </p>
+                <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+                  <button
+                    onClick={() => handleCreateTrialOrder("saree")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.65rem 1.25rem",
+                      backgroundColor: "#ea580c",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      border: "none",
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <Sparkles size={16} /> Create Saree Trial Order
+                  </button>
+                  <button
+                    onClick={() => handleCreateTrialOrder("oil")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.65rem 1.25rem",
+                      backgroundColor: "#16a34a",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      border: "none",
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <Sparkles size={16} /> Create Hair Oil Trial Order
+                  </button>
+                  <Link
+                    to="/products"
+                    target="_blank"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.65rem 1.25rem",
+                      backgroundColor: "#0f172a",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      textDecoration: "none",
+                      fontWeight: 700,
+                      fontSize: "0.9rem"
+                    }}
+                  >
+                    <ExternalLink size={16} /> Shop Live as Customer
+                  </Link>
+                </div>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -434,7 +584,7 @@ export const HostDashboardPage = () => {
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", borderBottom: "1px solid #f1f5f9", paddingBottom: "1rem", marginBottom: "1rem" }}>
                         <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
                             <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0f172a" }}>Order #{order.id}</span>
                             <span style={{ 
                               padding: "0.25rem 0.6rem", 
@@ -446,15 +596,28 @@ export const HostDashboardPage = () => {
                             }}>
                               {order.status}
                             </span>
+                            {order.isTrialOrder && (
+                              <span style={{
+                                padding: "0.2rem 0.6rem",
+                                borderRadius: "999px",
+                                fontSize: "0.72rem",
+                                fontWeight: 700,
+                                backgroundColor: "#fef3c7",
+                                color: "#b45309",
+                                border: "1px solid #fde68a"
+                              }}>
+                                🧪 Trial Order
+                              </span>
+                            )}
                           </div>
                           <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.3rem" }}>
                             Placed on: {new Date(order.orderDate).toLocaleString()} • Payment: <strong style={{ color: "#334155" }}>{order.paymentMethod}</strong>
                           </div>
                         </div>
 
-                        {/* Host Status Actions */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#475569" }}>Update Status:</span>
+                        {/* Host Status & Management Actions */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#475569" }}>Status:</span>
                           <select
                             value={order.status}
                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
@@ -475,6 +638,27 @@ export const HostDashboardPage = () => {
                             <option value="Cancelled">Cancelled</option>
                           </select>
 
+                          <a
+                            href={getHostOrderWhatsAppUrl(order)}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.4rem",
+                              padding: "0.4rem 0.8rem",
+                              backgroundColor: "#15803d",
+                              color: "#fff",
+                              borderRadius: "6px",
+                              textDecoration: "none",
+                              fontSize: "0.85rem",
+                              fontWeight: 700
+                            }}
+                            title="Send full order alert to Host WhatsApp (+974 7028 4220)"
+                          >
+                            <MessageCircle size={14} /> WhatsApp Host (+974 7028 4220)
+                          </a>
+
                           {whatsappPhone && (
                             <a
                               href={whatsappUrl}
@@ -492,10 +676,31 @@ export const HostDashboardPage = () => {
                                 fontSize: "0.85rem",
                                 fontWeight: 700
                               }}
+                              title="Chat with Customer on WhatsApp"
                             >
                               <Phone size={14} /> WhatsApp Customer
                             </a>
                           )}
+
+                          <button
+                            onClick={() => handleDeleteOrder(order.id)}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.3rem",
+                              padding: "0.4rem 0.75rem",
+                              backgroundColor: "#fff",
+                              border: "1px solid #fca5a5",
+                              color: "#dc2626",
+                              borderRadius: "6px",
+                              fontSize: "0.85rem",
+                              fontWeight: 600,
+                              cursor: "pointer"
+                            }}
+                            title="Delete this order from admin list"
+                          >
+                            <Trash2 size={14} /> Delete
+                          </button>
                         </div>
                       </div>
 
@@ -514,6 +719,11 @@ export const HostDashboardPage = () => {
                           <div style={{ fontSize: "0.9rem", color: "#475569", display: "flex", alignItems: "center", gap: "0.4rem", marginTop: "0.2rem" }}>
                             <MapPin size={14} /> {order.shippingAddress?.street}, {order.shippingAddress?.area}, {order.shippingAddress?.city}, {order.shippingAddress?.country}
                           </div>
+                          {order.shippingAddress?.landmark && (
+                            <div style={{ fontSize: "0.825rem", color: "#059669", marginTop: "0.25rem" }}>
+                              📍 {order.shippingAddress.landmark}
+                            </div>
+                          )}
                         </div>
 
                         <div>
@@ -528,14 +738,14 @@ export const HostDashboardPage = () => {
                                   {item.selectedColor ? ` (${item.selectedColor})` : ""}
                                 </span>
                                 <span style={{ fontWeight: 600, color: "#0f172a" }}>
-                                  ${((item.product?.price || 0) * item.quantity).toFixed(2)}
+                                  QAR {((item.product?.price || 0) * item.quantity).toFixed(2)}
                                 </span>
                               </div>
                             ))}
                           </div>
                           <div style={{ borderTop: "1px dashed #cbd5e1", marginTop: "0.75rem", paddingTop: "0.5rem", display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "1.05rem" }}>
                             <span>Total Amount:</span>
-                            <span style={{ color: "#0f172a" }}>${Number(order.totalAmount).toFixed(2)}</span>
+                            <span style={{ color: "#0f172a" }}>QAR {Number(order.totalAmount).toFixed(2)}</span>
                           </div>
                         </div>
                       </div>

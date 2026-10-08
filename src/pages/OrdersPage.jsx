@@ -142,25 +142,25 @@ export const OrdersPage = () => {
                       {order.items.map((item) => (
                         <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                           <img
-                            src={item.product.images[0]}
-                            alt={item.product.name}
+                            src={item.product?.images?.[0] || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"}
+                            alt={item.product?.name || "Product"}
                             style={{ width: "64px", height: "64px", borderRadius: "10px", objectFit: "cover", background: "#f8fafc" }}
                           />
                           <div style={{ flex: 1 }}>
-                            <Link to={`/product/${item.product.id}`}>
+                            <Link to={item.product?.id ? `/product/${item.product.id}` : "#"}>
                               <h4 style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--secondary)" }}>
-                                {item.product.name}
+                                {item.product?.name || "Handcrafted Product"}
                               </h4>
                             </Link>
                             <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginTop: "2px" }}>
-                              Brand: {item.product.brand}
+                              {item.product?.brand && <span>Brand: {item.product.brand}</span>}
                               {item.selectedColor && ` • Color: ${item.selectedColor}`}
                               {item.selectedSize && ` • Size: ${item.selectedSize}`}
                             </div>
                           </div>
                           <div style={{ textAlign: "right" }}>
                             <div style={{ fontWeight: 800, fontSize: "0.9375rem" }}>
-                              QAR {item.product.price}
+                              QAR {item.product?.price || 0}
                             </div>
                             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                               Qty: {item.quantity}

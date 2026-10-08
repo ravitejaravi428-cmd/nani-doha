@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, quickDemoLogin } = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,11 +16,6 @@ export const LoginPage = () => {
     if (success) {
       navigate("/account");
     }
-  };
-
-  const handleDemoLogin = () => {
-    quickDemoLogin();
-    navigate("/account");
   };
 
   return (
@@ -53,37 +48,11 @@ export const LoginPage = () => {
             <ShoppingBag size={28} />
           </div>
           <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--secondary)" }}>
-            Welcome to NANI DOHA
+            Official Customer Sign In
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginTop: "4px" }}>
-            Sign in to access your orders, wishlist, and VIP perks.
+            Sign in to access your orders, track shipments, and manage delivery addresses.
           </p>
-        </div>
-
-        {/* Demo Fast Track Button */}
-        <div style={{ marginBottom: "24px" }}>
-          <button
-            type="button"
-            className="btn btn-block"
-            style={{
-              background: "var(--primary-light)",
-              color: "var(--primary)",
-              border: "1.5px dashed var(--primary)",
-              fontWeight: 700
-            }}
-            onClick={handleDemoLogin}
-          >
-            <Sparkles size={16} />
-            <span>⚡ One-Click Instant Demo Login</span>
-          </button>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
-          <div style={{ flex: 1, height: "1px", background: "var(--border-light)" }} />
-          <span style={{ fontSize: "0.75rem", color: "var(--text-light)", textTransform: "uppercase", fontWeight: 600 }}>
-            or sign in with email
-          </span>
-          <div style={{ flex: 1, height: "1px", background: "var(--border-light)" }} />
         </div>
 
         <form onSubmit={handleSubmit}>

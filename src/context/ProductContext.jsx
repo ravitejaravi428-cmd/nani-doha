@@ -20,7 +20,15 @@ export const ProductProvider = ({ children }) => {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          // If cached products contain old offer poster thumbnails for sarees, sanitize with default images
+          const sanitized = parsed.map((p) => {
+            if (p.id?.startsWith("saree-") && p.images?.[0]?.includes("/images/offers/")) {
+              const defaultMatch = DEFAULT_PRODUCTS.find((dp) => dp.id === p.id);
+              return defaultMatch ? { ...p, images: defaultMatch.images } : p;
+            }
+            return p;
+          });
+          return sanitized;
         }
       }
     } catch (e) {

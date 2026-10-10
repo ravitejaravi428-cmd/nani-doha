@@ -28,8 +28,9 @@ export const FestiveSareeShowcase = () => {
   const { products } = useProducts();
   const { showToast } = useToast();
 
-  // Active poster modal state
+  // Active poster modal & single banner state
   const [modalPoster, setModalPoster] = useState(null); // null | 0 | 1
+  const [activeBannerIdx, setActiveBannerIdx] = useState(0); // 0 | 1 for single banner
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showHotspots, setShowHotspots] = useState(true);
   const [activeHotspot, setActiveHotspot] = useState(null);
@@ -285,144 +286,190 @@ export const FestiveSareeShowcase = () => {
           </div>
         </div>
 
-        {/* The Two Highlighted Poster Cards */}
-        <div className="festive-posters-grid">
-          {posters.map((poster, idx) => (
-            <div
-              key={poster.id}
-              className={`festive-poster-card ${idx === 0 ? "card-offer-10" : "card-offer-5"}`}
-              id={`saree-poster-card-${idx}`}
-            >
-              {/* Highlight Aura Glow */}
-              <div className="festive-poster-glow" />
+        {/* Single Festive Offer Banner */}
+        <div className="festive-single-banner-wrapper">
+          {/* Banner Offer Switcher Tabs */}
+          <div className="festive-banner-tabs-container">
+            {posters.map((p, pIdx) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`festive-banner-tab ${activeBannerIdx === pIdx ? "active" : ""}`}
+                onClick={() => setActiveBannerIdx(pIdx)}
+                id={`festive-tab-${p.id}`}
+              >
+                {pIdx === 0 ? <Flame size={16} /> : <Award size={16} />}
+                <span>{p.title}</span>
+                <span className="festive-tab-badge">{p.badgeText}</span>
+              </button>
+            ))}
+          </div>
 
-              {/* Poster Image Container with Interactive Zoom Trigger */}
-              <div className="festive-image-wrapper">
+          {/* The Single Unified Banner Card */}
+          <div
+            className={`festive-single-banner ${activeBannerIdx === 0 ? "card-offer-10" : "card-offer-5"}`}
+            id={`saree-single-banner-${activeBannerIdx}`}
+          >
+            {/* Highlight Aura Glow */}
+            <div className="festive-poster-glow" />
+
+            {/* Poster Image Container with Interactive Zoom Trigger */}
+            <div className="festive-image-wrapper">
+              <div
+                className="festive-image-container"
+                onClick={() => openModal(activeBannerIdx)}
+                title="Click to highlight & zoom in full resolution"
+              >
+                <img
+                  src={posters[activeBannerIdx].image}
+                  alt={posters[activeBannerIdx].title}
+                  className="festive-poster-img"
+                  loading="eager"
+                />
+
+                {/* Shimmer Light Reflection Effect */}
+                <div className="festive-shimmer-sweep" />
+
+                {/* Corner Badge */}
                 <div
-                  className="festive-image-container"
-                  onClick={() => openModal(idx)}
-                  title="Click to highlight & zoom in full resolution"
+                  className="festive-poster-badge"
+                  style={{ backgroundColor: posters[activeBannerIdx].badgeColor }}
                 >
-                  <img
-                    src={poster.image}
-                    alt={poster.title}
-                    className="festive-poster-img"
-                    loading="eager"
-                  />
+                  <Sparkles size={13} />
+                  <span>{posters[activeBannerIdx].badgeText}</span>
+                </div>
 
-                  {/* Shimmer Light Reflection Effect */}
-                  <div className="festive-shimmer-sweep" />
-
-                  {/* Corner Badge */}
-                  <div
-                    className="festive-poster-badge"
-                    style={{ backgroundColor: poster.badgeColor }}
+                {/* Banner Flip Arrows directly on the poster */}
+                <div className="festive-banner-nav-arrows">
+                  <button
+                    type="button"
+                    className="festive-banner-arrow-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveBannerIdx((prev) => (prev === 0 ? 1 : 0));
+                    }}
+                    title="Switch Festive Offer"
+                    aria-label="Previous Offer"
                   >
-                    <Sparkles size={13} />
-                    <span>{poster.badgeText}</span>
-                  </div>
+                    <ChevronLeft size={18} />
+                  </button>
+                  <span className="festive-banner-arrow-label">
+                    Offer {activeBannerIdx + 1} of 2
+                  </span>
+                  <button
+                    type="button"
+                    className="festive-banner-arrow-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveBannerIdx((prev) => (prev === 0 ? 1 : 0));
+                    }}
+                    title="Switch Festive Offer"
+                    aria-label="Next Offer"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
 
-                  {/* Floating Zoom / Highlight Trigger Pill */}
-                  <div className="festive-zoom-indicator">
-                    <Maximize2 size={16} />
-                    <span>Click to Zoom & Highlight</span>
-                  </div>
+                {/* Floating Zoom / Highlight Trigger Pill */}
+                <div className="festive-zoom-indicator">
+                  <Maximize2 size={16} />
+                  <span>Click to Zoom & Highlight</span>
+                </div>
 
-                  {/* Interactive Hotspot Pins */}
-                  {showHotspots &&
-                    poster.hotspots.map((spot) => (
-                      <div
-                        key={spot.id}
-                        className={`festive-hotspot-pin ${
-                          activeHotspot === spot.id ? "is-active" : ""
-                        }`}
-                        style={{ top: `${spot.y}%`, left: `${spot.x}%` }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
-                        }}
-                      >
-                        <span className="festive-pin-dot" />
-                        <span className="festive-pin-pulse" />
+                {/* Interactive Hotspot Pins */}
+                {showHotspots &&
+                  posters[activeBannerIdx].hotspots.map((spot) => (
+                    <div
+                      key={spot.id}
+                      className={`festive-hotspot-pin ${
+                        activeHotspot === spot.id ? "is-active" : ""
+                      }`}
+                      style={{ top: `${spot.y}%`, left: `${spot.x}%` }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
+                      }}
+                    >
+                      <span className="festive-pin-dot" />
+                      <span className="festive-pin-pulse" />
 
-                        {/* Tooltip Card */}
-                        <div className="festive-pin-tooltip">
-                          <strong>{spot.title}</strong>
-                          <p>{spot.desc}</p>
-                          <div className="festive-pin-zoom-hint">Click image to inspect in HD</div>
-                        </div>
+                      {/* Tooltip Card */}
+                      <div className="festive-pin-tooltip">
+                        <strong>{spot.title}</strong>
+                        <p>{spot.desc}</p>
+                        <div className="festive-pin-zoom-hint">Click image to inspect in HD</div>
                       </div>
-                    ))}
-                </div>
-              </div>
-
-              {/* Poster Info & Action Details */}
-              <div className="festive-poster-info">
-                <div className="festive-info-header">
-                  <div className="festive-telugu-badge">{poster.teluguTitle}</div>
-                  <h3 className="festive-poster-title">{poster.title}</h3>
-                  <div className="festive-poster-subtitle">{poster.subtitle}</div>
-                </div>
-
-                <p className="festive-poster-desc">{poster.description}</p>
-
-                {/* Key Highlight Bullets */}
-                <div className="festive-highlights-list">
-                  {poster.highlights.map((item, hIdx) => (
-                    <div key={hIdx} className="festive-highlight-item">
-                      <Check size={15} className="festive-check-icon" />
-                      <span>{item}</span>
                     </div>
                   ))}
-                </div>
-
-                {/* Coupon Code Strip */}
-                <div className="festive-coupon-box">
-                  <div className="festive-coupon-content">
-                    <span className="festive-coupon-title">Use Promo Code:</span>
-                    <span className="festive-coupon-code">{poster.couponCode}</span>
-                    <span className="festive-coupon-save">Save {poster.discountPercent}% Instantly</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-gold"
-                    onClick={(e) => handleCopyCoupon(poster.couponCode, e)}
-                  >
-                    {copiedCode === poster.couponCode ? (
-                      <>
-                        <Check size={14} color="#10b981" />
-                        <span>Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={14} />
-                        <span>Copy Code</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="festive-action-row">
-                  <button
-                    type="button"
-                    className="btn btn-primary festive-highlight-btn"
-                    onClick={() => openModal(idx)}
-                  >
-                    <Eye size={16} />
-                    <span>Highlight & Inspect Poster</span>
-                  </button>
-                  <Link
-                    to={`/products?category=sarees`}
-                    className="btn btn-secondary festive-shop-btn"
-                  >
-                    <ShoppingBag size={16} />
-                    <span>Shop Sarees</span>
-                  </Link>
-                </div>
               </div>
             </div>
-          ))}
+
+            {/* Poster Info & Action Details */}
+            <div className="festive-poster-info">
+              <div className="festive-info-header">
+                <div className="festive-telugu-badge">{posters[activeBannerIdx].teluguTitle}</div>
+                <h3 className="festive-poster-title">{posters[activeBannerIdx].title}</h3>
+                <div className="festive-poster-subtitle">{posters[activeBannerIdx].subtitle}</div>
+              </div>
+
+              <p className="festive-poster-desc">{posters[activeBannerIdx].description}</p>
+
+              {/* Key Highlight Bullets */}
+              <div className="festive-highlights-list">
+                {posters[activeBannerIdx].highlights.map((item, hIdx) => (
+                  <div key={hIdx} className="festive-highlight-item">
+                    <Check size={15} className="festive-check-icon" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Coupon Code Strip */}
+              <div className="festive-coupon-box">
+                <div className="festive-coupon-content">
+                  <span className="festive-coupon-title">Use Promo Code:</span>
+                  <span className="festive-coupon-code">{posters[activeBannerIdx].couponCode}</span>
+                  <span className="festive-coupon-save">Save {posters[activeBannerIdx].discountPercent}% Instantly</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-gold"
+                  onClick={(e) => handleCopyCoupon(posters[activeBannerIdx].couponCode, e)}
+                >
+                  {copiedCode === posters[activeBannerIdx].couponCode ? (
+                    <>
+                      <Check size={14} color="#10b981" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={14} />
+                      <span>Copy Code</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="festive-action-row">
+                <button
+                  type="button"
+                  className="btn btn-primary festive-highlight-btn"
+                  onClick={() => openModal(activeBannerIdx)}
+                >
+                  <Eye size={16} />
+                  <span>Highlight & Inspect Poster</span>
+                </button>
+                <Link
+                  to="/products?category=sarees"
+                  className="btn btn-secondary festive-shop-btn"
+                >
+                  <ShoppingBag size={16} />
+                  <span>Shop Sarees</span>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Featured Matching Saree Products Shelf */}

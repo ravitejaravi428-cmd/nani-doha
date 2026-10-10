@@ -16,7 +16,6 @@ export const PRODUCTS = [
     isBestSeller: true,
     badge: "10% OFF OFFER",
     images: [
-      "/images/offers/saree-offer-10-percent.jpg",
       "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80"
     ],
@@ -52,8 +51,8 @@ export const PRODUCTS = [
     isBestSeller: true,
     badge: "10% OFF OFFER",
     images: [
-      "/images/offers/saree-offer-10-percent.jpg",
-      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"
     ],
     description: "Graceful lilac lavender silk drape with delicate shimmer weaving and a scalloped golden border. Paired with a contrast black blouse piece decorated with rich antique gold zardozi motifs and festive gift tag.",
     specifications: {
@@ -85,8 +84,8 @@ export const PRODUCTS = [
     isBestSeller: true,
     badge: "Festival Special",
     images: [
-      "/images/offers/saree-offer-10-percent.jpg",
-      "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80"
     ],
     description: "Glittering sequins and intricate paisley scallop border in a rich mauve magenta tone. Lightweight, fluid drape that commands attention at any celebratory evening.",
     specifications: {
@@ -117,7 +116,7 @@ export const PRODUCTS = [
     isBestSeller: true,
     badge: "10% OFF OFFER",
     images: [
-      "/images/offers/saree-offer-10-percent.jpg",
+      "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"
     ],
     description: "Deep crimson maroon festive silk saree with radiant glitter finish and a grand paisley scallop border. Includes an unstitched heavy designer blouse piece.",
@@ -149,7 +148,7 @@ export const PRODUCTS = [
     isBestSeller: true,
     badge: "5% BUMPER OFFER",
     images: [
-      "/images/offers/nani-andhra-sarees-5-percent.jpg",
+      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80"
     ],
     description: "Part of the iconic 'నాని ఆంధ్ర చీరలు 5% Bumper Offer' collection. Authentic Andhra heritage silk in royal purple with rich golden floral scallop borders. ఉత్తమ నాణ్యత మరియు ఆంధ్ర సంప్రదాయానికి ప్రతీక.",
@@ -183,8 +182,8 @@ export const PRODUCTS = [
     isBestSeller: false,
     badge: "5% BUMPER OFFER",
     images: [
-      "/images/offers/nani-andhra-sarees-5-percent.jpg",
-      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=80"
     ],
     description: "Vibrant festive tangerine orange silk saree from the Nani Andhra Sarees bumper collection. Embellished with white & silver floral embroidery borders. పెళ్లి మరియు పండగలకి బెస్ట్ ఛాయిస్!",
     specifications: {

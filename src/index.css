@@ -3213,35 +3213,129 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-1px);
 }
 
-/* Posters Grid */
-.festive-posters-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
+/* Single Unified Festive Banner */
+.festive-single-banner-wrapper {
   margin-bottom: 56px;
 }
 
-.festive-poster-card {
-  background: #ffffff;
-  border-radius: 24px;
-  overflow: hidden;
-  border: 2px solid rgba(245, 158, 11, 0.25);
-  box-shadow: 0 16px 40px -12px rgba(180, 83, 9, 0.14), 0 0 0 1px rgba(245, 158, 11, 0.1);
-  transition: all var(--transition-normal);
+.festive-banner-tabs-container {
   display: flex;
-  flex-direction: column;
-  position: relative;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.festive-poster-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 50px -10px rgba(180, 83, 9, 0.25), 0 0 30px rgba(245, 158, 11, 0.3);
+.festive-banner-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid rgba(245, 158, 11, 0.25);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.festive-banner-tab:hover {
+  border-color: #f59e0b;
+  color: #b45309;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.15);
+}
+
+.festive-banner-tab.active {
+  background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%);
+  color: #ffffff;
+  border-color: #991b1b;
+  box-shadow: 0 6px 20px rgba(185, 28, 28, 0.3);
+}
+
+.festive-tab-badge {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.festive-banner-tab:not(.active) .festive-tab-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.festive-single-banner {
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 2px solid rgba(245, 158, 11, 0.25);
+  box-shadow: 0 20px 50px -15px rgba(180, 83, 9, 0.16), 0 0 0 1px rgba(245, 158, 11, 0.1);
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.festive-single-banner:hover {
+  box-shadow: 0 26px 60px -12px rgba(180, 83, 9, 0.24), 0 0 35px rgba(245, 158, 11, 0.2);
   border-color: #f59e0b;
 }
 
 .card-offer-10:hover {
   border-color: #dc2626;
-  box-shadow: 0 24px 50px -10px rgba(220, 38, 38, 0.25), 0 0 30px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 26px 60px -12px rgba(220, 38, 38, 0.24), 0 0 35px rgba(220, 38, 38, 0.18);
+}
+
+/* Banner In-Image Flip Arrows */
+.festive-banner-nav-arrows {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 6;
+}
+
+.festive-banner-arrow-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.festive-banner-arrow-btn:hover {
+  background: #f59e0b;
+  color: #0f172a;
+}
+
+.festive-banner-arrow-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #f8fafc;
+  padding: 0 4px;
 }
 
 /* Image Container & Highlighting */
@@ -3932,9 +4026,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .festive-posters-grid {
+  .festive-single-banner {
     grid-template-columns: 1fr;
-    max-width: 600px;
+    max-width: 640px;
     margin-left: auto;
     margin-right: auto;
   }

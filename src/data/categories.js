@@ -11,7 +11,7 @@ export const CATEGORIES = [
     name: "Festive & Japanese Sarees (చీరలు)",
     slug: "sarees",
     icon: "Sparkles",
-    image: "/images/offers/saree-offer-10-percent.jpg",
+    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
     itemCount: 9,
     subcategories: ["Andhra Heritage Sarees", "Japanese Sarees", "Fancy Sarees", "Silk Sarees"]
   },
